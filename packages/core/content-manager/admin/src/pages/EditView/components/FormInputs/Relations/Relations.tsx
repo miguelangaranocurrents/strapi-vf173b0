@@ -750,9 +750,15 @@ const RelationModalWithContext = ({
 
   const options = data?.results ?? [];
 
+  /**
+   * Whenever the selection changes, clear the typed search too. Otherwise the server query keeps
+   * filtering on the previous text (which can only match the entry just selected and is now omitted),
+   * and the dropdown shows "No relations available" instead of the remaining entries.
+   */
   React.useLayoutEffect(() => {
     setTextValue('');
-  }, [fieldValue]);
+    setSearchParams((s) => (s._q === '' && s.page === 1 ? s : { ...s, _q: '', page: 1 }));
+  }, [fieldValue, setSearchParams]);
 
   const handleSearch = async (search: string) => {
     setSearchParams((s) => ({ ...s, _q: search, page: 1 }));
